@@ -14,26 +14,19 @@ public class ObjectFactory {
   // 주석시 NoSuchBeanDefinitionException 발생(No qualifying bean of type 'tobyspring.hellospring.PaymentService' available)
     @Bean
     public PaymentService paymentService() {
-        return new PaymentService(exRateProvider());
+//        return new PaymentService(exRateProvider());
+        return new PaymentService(cachedExRateProvider());
     }
-
-//    @Bean
-//    public OrderService orderService() {
-//        return new OrderService(exRateProvider());
-//    }
-
     // Bean을 생성하는 메소드임을 명시
     @Bean
     public ExRateProvider exRateProvider() {
-//        return new WebApiExRateProvider();
-        return new SimpleExRateProvider();
+        return new WebApiExRateProvider();
+//        return new SimpleExRateProvider();
+    }
+
+    // 캐시 Bean 생성
+    @Bean
+    public ExRateProvider cachedExRateProvider() {
+        return new CachedExRateProvider(exRateProvider());
     }
 }
-
-//class OrderService {
-//    ExRateProvider exRateProvider;
-//
-//    public OrderService(ExRateProvider exRateProvider) {
-//        this.exRateProvider = exRateProvider;
-//    }
-//}

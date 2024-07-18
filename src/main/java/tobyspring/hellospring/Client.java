@@ -5,29 +5,25 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         BeanFactory beanFactory = new AnnotationConfigApplicationContext(ObjectFactory.class);
         PaymentService paymentService = beanFactory.getBean(PaymentService.class);
 
-        // BeanFactory 통해 Bean 가져오기
-//        PaymentService paymentService2 = beanFactory.getBean(PaymentService.class);
-//        System.out.println("paymentService = " + paymentService);       // paymentService = tobyspring.hellospring.PaymentService@1e04fa0a
-//        System.out.println("paymentService2 = " + paymentService2);     // paymentService2 = tobyspring.hellospring.PaymentService@1e04fa0a
-//        System.out.println(paymentService == paymentService2);          // true
+        Payment payment1 = paymentService.prepare(100L, "USD", BigDecimal.valueOf(50.7));
+        System.out.println("payment1 = " + payment1);
+        System.out.println("--------------------------------------------------------------------\n");
 
-        // ObjectFactory 통해 Bean 가져오기
-//        ObjectFactory objectFactory = beanFactory.getBean(ObjectFactory.class);
-//        PaymentService paymentService1 = objectFactory.paymentService();
-//        PaymentService paymentService2 = objectFactory.paymentService();
-//        System.out.println("paymentService1 = " + paymentService1);     // paymentService1 = tobyspring.hellospring.PaymentService@6a84a97d
-//        System.out.println("paymentService2 = " + paymentService2);     // paymentService2 = tobyspring.hellospring.PaymentService@6a84a97d
-//        System.out.println(paymentService == paymentService2);          // true
+        Payment payment2 = paymentService.prepare(100L, "USD", BigDecimal.valueOf(50.7));
+        System.out.println("payment2 = " + payment2);
+        System.out.println("--------------------------------------------------------------------\n");
 
-//        OrderService orderService = beanFactory.getBean(OrderService.class);
+        // 3초 대기
+        TimeUnit.SECONDS.sleep(3);
 
-        Payment payment = paymentService.prepare(100L, "USD", BigDecimal.valueOf(50.7));
-        System.out.println(payment);
+        Payment payment3 = paymentService.prepare(100L, "USD", BigDecimal.valueOf(50.7));
+        System.out.println("payment3 = " + payment3);
     }
 }
