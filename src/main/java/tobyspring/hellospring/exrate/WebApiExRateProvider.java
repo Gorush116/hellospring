@@ -21,6 +21,7 @@ public class WebApiExRateProvider implements ExRateProvider {
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
 
+        // 변경되지 않는 부분 시작
         // URI 준비, 예외처리 작업 코드
         URI uri;
         try {
@@ -31,26 +32,36 @@ public class WebApiExRateProvider implements ExRateProvider {
 
         // API 실행, 서버로부터 받은 응답 가져옴
         String response;
-        HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) uri.toURL().openConnection();
-            // TODO: InputStreamReader / BufferedReader 공부할 것
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                response = br.lines().collect(Collectors.joining());
-            }
+            response = executeApi(uri);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         // JSON 문자열 파싱, 필요한 환율정보 추출
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            ExRateData data = mapper.readValue(response, ExRateData.class);
-            System.out.println("API ExRate : " + data.rates().get("KRW"));
-            return data.rates().get("KRW");
+            return parseExRate(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        // 변경되지 않는 부분 끝
 
     }
+
+    // 변경되는 부분 시작
+    private static BigDecimal parseExRate(String response) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        ExRateData data = mapper.readValue(response, ExRateData.class);
+        return data.rates().get("KRW");
+    }
+
+    private static String executeApi(URI uri) throws IOException {
+        String response;
+        HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            response = br.lines().collect(Collectors.joining());
+        }
+        return response;
+    }
+    // 변경되는 부분 끝
 }
