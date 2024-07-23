@@ -21,6 +21,7 @@ public class WebApiExRateProvider implements ExRateProvider {
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
 
+        // URI 준비, 예외처리 작업 코드
         URI uri;
         try {
             uri = new URI(url);
@@ -28,18 +29,20 @@ public class WebApiExRateProvider implements ExRateProvider {
             throw new RuntimeException(e);
         }
 
+        // API 실행, 서버로부터 받은 응답 가져옴
         String response;
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) uri.toURL().openConnection();
             // TODO: InputStreamReader / BufferedReader 공부할 것
-            try(BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                 response = br.lines().collect(Collectors.joining());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        // JSON 문자열 파싱, 필요한 환율정보 추출
         try {
             ObjectMapper mapper = new ObjectMapper();
             ExRateData data = mapper.readValue(response, ExRateData.class);
