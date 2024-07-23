@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.stream.Collectors;
 
 //@Component
@@ -21,7 +20,12 @@ public class WebApiExRateProvider implements ExRateProvider {
     public BigDecimal getExRate(String currency) {
         String url = "https://open.er-api.com/v6/latest/" + currency;
 
-        // 변경되지 않는 부분 시작
+        return runApiForExRate(url);
+
+    }
+
+    // 변경되지 않는 부분 시작
+    private static BigDecimal runApiForExRate(String url) {
         // URI 준비, 예외처리 작업 코드
         URI uri;
         try {
@@ -40,16 +44,15 @@ public class WebApiExRateProvider implements ExRateProvider {
 
         // JSON 문자열 파싱, 필요한 환율정보 추출
         try {
-            return parseExRate(response);
+            return extractExRate(response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        // 변경되지 않는 부분 끝
-
     }
+    // 변경되지 않는 부분 끝
 
     // 변경되는 부분 시작
-    private static BigDecimal parseExRate(String response) throws JsonProcessingException {
+    private static BigDecimal extractExRate(String response) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ExRateData data = mapper.readValue(response, ExRateData.class);
         return data.rates().get("KRW");
