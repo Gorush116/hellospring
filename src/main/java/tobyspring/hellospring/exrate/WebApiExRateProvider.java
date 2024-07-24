@@ -29,7 +29,6 @@ public class WebApiExRateProvider implements ExRateProvider {
 
     // 변경되지 않는 부분 시작
     private static BigDecimal runApiForExRate(String url, ApiExecutor apiExecutor, ExRateExtractor exRateExtractor) {
-        // URI 준비, 예외처리 작업 코드
         URI uri;
         try {
             uri = new URI(url);
@@ -37,7 +36,6 @@ public class WebApiExRateProvider implements ExRateProvider {
             throw new RuntimeException(e);
         }
 
-        // API 실행, 서버로부터 받은 응답 가져옴
         String response;
         try {
             response = apiExecutor.execute(uri);
@@ -45,7 +43,6 @@ public class WebApiExRateProvider implements ExRateProvider {
             throw new RuntimeException(e);
         }
 
-        // JSON 문자열 파싱, 필요한 환율정보 추출
         try {
             return exRateExtractor.extract(response);
         } catch (JsonProcessingException e) {
