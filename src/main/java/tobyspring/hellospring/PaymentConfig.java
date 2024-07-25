@@ -2,6 +2,9 @@ package tobyspring.hellospring;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tobyspring.hellospring.api.ApiTemplate;
+import tobyspring.hellospring.api.ErApiExRateExtractor;
+import tobyspring.hellospring.api.SimpleApiExcutor;
 import tobyspring.hellospring.exrate.CachedExRateProvider;
 import tobyspring.hellospring.payment.ExRateProvider;
 import tobyspring.hellospring.exrate.WebApiExRateProvider;
@@ -22,10 +25,16 @@ public class PaymentConfig {
         return new PaymentService(exRateProvider(), clock());
 //        return new PaymentService(cachedExRateProvider());
     }
+
+    @Bean
+    public ApiTemplate apiTemplate() {
+        return new ApiTemplate(new SimpleApiExcutor(), new ErApiExRateExtractor());
+    }
+
     // Bean을 생성하는 메소드임을 명시
     @Bean
     public ExRateProvider exRateProvider() {
-        return new WebApiExRateProvider();
+        return new WebApiExRateProvider(apiTemplate());
 //        return new SimpleExRateProvider();
     }
 
